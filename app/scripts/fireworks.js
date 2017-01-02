@@ -38,7 +38,9 @@
     context.fillRect(particles.settings.bounds.right,0, canvas.width, canvas.height);
     context.fillRect(0, particles.settings.bounds.bottom, canvas.width, canvas.height);
 
-    var determinant = Math.floor(Math.round(Number.prototype.randomBetween(0, 1) * 10) / 10);
+    var frequency = 1.25;
+    var determinant = Math.floor(Math.round((Number.prototype.randomBetween(0, 1) * 10) / frequency) / 10);
+    console.log(determinant);
 
     if(determinant > 0){
       var firework = new Firework();
@@ -46,7 +48,7 @@
     }
 
     fireworks.map(function(firework){
-      if(firework.particle.life < firework.lifespan){
+      if(firework.particle.velocity.y < 0){
         firework.particle.draw();
       }
     });
@@ -79,25 +81,24 @@
   }
 
   function Firework(){
-    this.collection = [];
-    this.lifespan = 25;
-
-    this.particle = new Particle();
-
+    this.particles = [];
     var position = {
         x: Math.round(Number.prototype.randomBetween(0, canvas.width) * 100) / 100
     };
+    var velocity = {
+      x: -1
+    };
+
+    this.particle = new Particle();
 
     this.particle.position.x = position.x;
     this.particle.position.y = canvas.height;
 
-    var velocity = {
-      x: -1
-    };
+    //TODO: Fix the velocity of x so as to change the angle at which it shoots out towards
     this.particle.velocity.x = velocity.x;
 
     var randomize = Math.round(Math.random() * 10) / 10;
-    velocity.y = (randomize * -20) < -11 ? randomize * -20 : randomize;
+    velocity.y = (randomize * -18) < -7 ? randomize * -18 : randomize;
     this.particle.velocity.y = velocity.y;
   }
 
