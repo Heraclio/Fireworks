@@ -40,7 +40,6 @@
 
     var frequency = 1.25;
     var determinant = Math.floor(Math.round((Number.prototype.randomBetween(0, 1) * 10) / frequency) / 10);
-    console.log(determinant);
 
     if(determinant > 0){
       var firework = new Firework();
@@ -86,7 +85,7 @@
         x: Math.round(Number.prototype.randomBetween(0, canvas.width) * 100) / 100
     };
     var velocity = {
-      x: -1
+      x: Number.prototype.randomBetween(-2.5, 2.5)
     };
 
     this.particle = new Particle();
@@ -94,11 +93,12 @@
     this.particle.position.x = position.x;
     this.particle.position.y = canvas.height;
 
-    //TODO: Fix the velocity of x so as to change the angle at which it shoots out towards
     this.particle.velocity.x = velocity.x;
 
-    var randomize = Math.round(Math.random() * 10) / 10;
-    velocity.y = (randomize * -18) < -7 ? randomize * -18 : randomize;
+    var randomize = Math.round((Math.round(Math.random() * 10) / 10) * 10) / 10;
+    var min = -12.5;
+    var max = -20;
+    velocity.y = Number.prototype.randomBetween(min, max);
     this.particle.velocity.y = velocity.y;
   }
 
