@@ -33,11 +33,6 @@
     context.fillStyle = "black";
     context.fillRect(0, 0, canvas.width, canvas.height);
 
-    context.fillStyle = "magenta";
-    context.fillRect(0,0, particles.settings.bounds.left, canvas.height);
-    context.fillRect(particles.settings.bounds.right,0, canvas.width, canvas.height);
-    context.fillRect(0, particles.settings.bounds.bottom, canvas.width, canvas.height);
-
     var frequency = 1.25;
     var determinant = Math.floor(Math.round((Number.prototype.randomBetween(0, 1) * 10) / frequency) / 10);
 
@@ -46,12 +41,24 @@
       fireworks.push(firework);
     }
 
-    fireworks.map(function(firework){
-      if(firework.particle.velocity.y < 0){
-        firework.particle.draw();
+    fireworks.filter(function(firework){
+      return firework.particle.velocity.y < 0;
+    }).map(function(firework){
+      firework.particle.draw();
+
+      if(firework.particle.velocity.y > 0){
+        firework.explode();
       }
+
     });
+
+    context.fillStyle = "magenta";
+    context.fillRect(0,0, particles.settings.bounds.left, canvas.height);
+    context.fillRect(particles.settings.bounds.right,0, canvas.width, canvas.height);
+    context.fillRect(0, particles.settings.bounds.bottom, canvas.width, canvas.height);
+
   }, 30);
+  // 30
 
   function Particle(){
     this.position = {
@@ -100,6 +107,10 @@
     var max = -20;
     velocity.y = Number.prototype.randomBetween(min, max);
     this.particle.velocity.y = velocity.y;
+  }
+
+  Firework.prototype.explode = function(){
+    console.log('commence explosion sequence');
   }
 
 })();
