@@ -41,17 +41,30 @@
       fireworks.push(firework);
     }
 
-    fireworks.filter(function(firework){
-      return firework.particle.velocity.y < 0;
+    /*
+    fireworks.filter(function(firework, index){
+      var condition = firework.particle.velocity.y < 0;
+      if(firework.particle.velocity.y >= false){
+        firework.explode();
+        fireworks.splice(index, 1);
+      }
+      return condition;
     }).map(function(firework){
       firework.particle.draw();
+    });
+    */
 
-      if(firework.particle.velocity.y > 0){
-        firework.explode();
-      }
-
+    fireworks.filter(function(firework){
+      return firework.particle.velocity.y >= 0;
+    }).map(function(firework, index){
+      firework.explode();
+      fireworks.splice(index, 1);
     });
 
+    fireworks.map(function(firework){
+      firework.particle.draw();
+    });
+    
     context.fillStyle = "magenta";
     context.fillRect(0,0, particles.settings.bounds.left, canvas.height);
     context.fillRect(particles.settings.bounds.right,0, canvas.width, canvas.height);
