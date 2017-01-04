@@ -55,7 +55,7 @@
     fireworks.filter(function(firework){
       return firework.particle.velocity.y < 0;
     }).map(function(firework, index){
-      firework.particle.update().draw();
+      firework.particle.update(0.5).draw();
     });
 
     context.fillStyle = "magenta";
@@ -77,11 +77,12 @@
     this.life = 0;
   }
 
-  Particle.prototype.update = function(){
+  Particle.prototype.update = function(gravity){
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
 
-    this.velocity.y += particles.settings.gravity;
+
+    this.velocity.y += gravity;
     this.life++;
 
     return this;
@@ -96,7 +97,6 @@
   function Firework(){
     var count = Math.round(Number.prototype.randomBetween(5, 10) * 1) / 1;
     this.particles = Array.apply(null, Array(count));
-
     this.particle = new Particle();
     this.particle.position = {
         x: Math.round(Number.prototype.randomBetween(0, canvas.width) * 100) / 100,
@@ -106,43 +106,68 @@
       x: Number.prototype.randomBetween(-2.5, 2.5),
       y: Number.prototype.randomBetween(-12.5, -20)
     };
+    this.explosion = {
+      lifetime: 50
+    };
   }
 
   Firework.prototype.end = function(){
-    console.log(this);
     this.exploded = true;
   };
 
   Firework.prototype.explode = function(){
-    var position = this.particle.position;
-    var length = this.particles.length;
     var end = this.end;
+    var lifetime = this.explosion.lifetime;
 
     this.particles.filter(function(particle){
-      if(particle){
-        return particle.life >= 100;
-      }
+      return particle != undefined;
+    }).filter(function(particle){
+        return particle.life >= lifetime;
     }).map(function(particle, index){
-      console.log(particle);
+      end();
     });
 
-    // TODO: SOME BUG HERE WITH THE PARTICLES BEING EMITTED.
-    this.particles.map(function(particle, index){
-      if(!particle){
-        var randomVelocity = 4 + Math.random() * 4;
-        var angle = index * ((Math.PI * 2) / length);
-        particle = new Particle();
-        particle.position = position;
-        particle.velocity = {
-          x: Math.cos(angle) * randomVelocity,
-          y: Math.sin(angle) * randomVelocity
-        };
-      }
-      particle.update().draw();
-      particle.life++;
+    var update = this.particles.filter(function(particle){
+      return particle != undefined;
+    }).filter(function(particle){
+        return particle.life < lifetime;
+    }).map(function(particle, index){
+      particle.update(0.05).draw();
+      return particle;
+    });
+
+    var position = this.particle.position;
+    var length = this.particles.length;
+
+    var initialize = this.particles.filter(function(particle){
+      return particle == undefined;
+    }).map(function(initial, index){
+      var randomVelocity = 5 + Math.random() * 5;
+      var angle = index * ((Math.PI * 2) / length);
+
+      var particle = new Particle();
+      particle.position = position;
+
+      //TODO: Velocity needs to be initialized at the position of the explosion, and the propel outward.
+      //TODO: Revisit calculations.
+      
+      particle.velocity = {
+        // Number.prototype.randomBetween(-2.5, 2.5)
+        // x: Math.sin(angle) * randomVelocity,
+        // y: Math.cos(angle) * randomVelocity
+        x: Math.sin(angle) * randomVelocity,
+        y: Math.cos(angle) * randomVelocity
+      };
 
       return particle;
     });
+
+    if(update.length > 0){
+      this.particles = update;
+    } else {
+      this.particles = initialize;
+    }
+
   }
 
 })();
